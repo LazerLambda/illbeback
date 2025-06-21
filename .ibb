@@ -1,0 +1,18 @@
+#!/bin/bash
+
+ibb() {
+    # Find Wi-Fi device dynamically (e.g., wlo1, wlp3s0)
+    WIFIDEVICE=$(ip link show | grep -oP '^\d+: \Kwl\w*(?=:)')
+    
+    if [[ -z "$WIFIDEVICE" ]]; then
+        echo "❌ No Wi-Fi interface found."
+        return 1
+    fi
+
+    echo "🔧 Changing MAC for interface: $WIFIDEVICE"
+    sudo ip link set dev "$WIFIDEVICE" down
+    sudo macchanger -r "$WIFIDEVICE"
+    sudo ip link set dev "$WIFIDEVICE" up
+
+    echo "✅ MAC address randomized and interface brought back up."
+}
